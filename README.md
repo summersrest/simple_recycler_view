@@ -94,4 +94,6 @@ RecyclerView的封装
 因为该控件已经对RecyclerView进行过监听，用于实现平滑滚动条目置顶，故要监听其滚动事件，需要使用以下接口：OnScrollListenerExtension
 
 	mRv.setOnScrollListenerExtension(new OnScrollListenerExtension...);
-
+# 感谢
+·https://github.com/GitLqr/LQRRecyclerViewLibrary#readme
+基于该开源库增加了AndroidX支持。
