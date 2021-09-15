@@ -15,20 +15,20 @@ RecyclerView的封装
 ```
 ### **1、导入**
 ```
-	implementation 'com.github.summersrest:simple_recycler_view:v1.0.0'
+implementation 'com.github.summersrest:simple_recycler_view:v1.0.0'
 ```
 ### **2、设置LQRRecyclerView的控件类型**
 
 *LinearLayoutManager能做到的，GridLayoutManager也能做到，所以本工程去掉了"list"这一项
 
-	①xml方式（有三种选择：grid、stagger）
-	```xml
-	app:rv_type="" 
-	```
-	②代码方式(有三种选择：TYPE_GRID、TYPE_STAGGER)
-	```java
-	mRv.setType(SimpleRecyclerView.TYPE_XX);
-	```
+①xml方式（有三种选择：grid、stagger）
+```xml
+app:rv_type="" 
+```
+②代码方式(有三种选择：TYPE_GRID、TYPE_STAGGER)
+```java
+mRv.setType(SimpleRecyclerView.TYPE_XX);
+```
 
 ### **3、设置SimpleRecyclerView的控件方向**
 
