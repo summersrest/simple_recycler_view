@@ -15,7 +15,7 @@ RecyclerView的封装
 
 ### **1、导入**
 
-	implementation 'com.github.summersrest:simple_recycler_view:v1.0.0'
+	implementation 'com.github.summersrest:simple_recycler_view:v1.0.1'
 
 ### **2、设置LQRRecyclerView的控件类型**
 
