@@ -17,7 +17,7 @@ RecyclerView的封装
 
 	implementation 'com.github.summersrest:simple_recycler_view:v1.0.1'
 
-### **2、设置LQRRecyclerView的控件类型**
+### **2、设置RecyclerView的控件类型**
 
 *LinearLayoutManager能做到的，GridLayoutManager也能做到，所以本工程去掉了"list"这一项
 
