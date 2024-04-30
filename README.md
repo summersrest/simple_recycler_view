@@ -15,7 +15,23 @@ RecyclerView的封装
 
 ### **1、导入**
 
-	implementation 'com.github.summersrest:simple_recycler_view:v1.0.1'
+ 1.引入jitpack
+ 项目根目录中的build.gradle
+ ```
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+	google()
+	mavenCentral()
+	maven { url = uri("https://www.jitpack.io")}
+    }
+}
+```
+2.添加
+ Module的build.gradle
+```
+implementation("com.github.summersrest:simple_recycler_view:v1.0.1")
+```
 
 ### **2、设置RecyclerView的控件类型**
 
