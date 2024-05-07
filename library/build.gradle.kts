@@ -10,7 +10,6 @@ android {
     defaultConfig {
         minSdk = 24
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -26,7 +25,9 @@ android {
     }
 
     publishing {
-        singleVariant("release")
+        singleVariant("release") {
+            withSourcesJar()
+        }
     }
 }
 
@@ -42,17 +43,12 @@ dependencies {
 publishing {
     publications {
         register<MavenPublication>("release") {
-            groupId = "com.sum.simple"
-            artifactId = "recycler"
-            version = "1.0.0"
+            groupId = "com.android.library"
+            artifactId = "recyclerview"
+            version = "0.0.1"
 
             afterEvaluate {
                 from(components["release"])
-            }
-        }
-        repositories {
-            maven {
-                url = uri("../build/maven")
             }
         }
     }
