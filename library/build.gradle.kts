@@ -24,6 +24,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    publishing {
+        singleVariant("release")
+    }
 }
 
 dependencies {
@@ -35,3 +39,21 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }
 
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.sum.simple"
+            artifactId = "recycler"
+            version = "1.0.0"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+        repositories {
+            maven {
+                url = uri("../build/maven")
+            }
+        }
+    }
+}
