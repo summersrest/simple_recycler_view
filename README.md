@@ -28,11 +28,11 @@ RecyclerView的封装
     }
     ```
     
-    2.添加
-    Module的build.gradle
+2.添加
+Module的build.gradle
     
     ```
-	implementation 'com.github.summersrest:simple_recycler_view:v1.0.9'
+    implementation 'com.github.summersrest:simple_recycler_view:v1.0.9'
     ```
 
 ### **2、设置SimpleRecyclerView的控件类型**
