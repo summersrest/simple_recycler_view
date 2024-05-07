@@ -39,7 +39,7 @@ public class SimpleRecyclerView extends RecyclerView {
 
     //分割线
     private int dividerSize = 0;
-    private int dividerColor = Color.BLACK;
+    private int dividerColor = Color.WHITE;
     private Drawable dividerDrawable = null;
 
     //动画
@@ -76,7 +76,7 @@ public class SimpleRecyclerView extends RecyclerView {
             } else if (attr == R.styleable.SimpleRecyclerView_rv_divider_drawable) {
                 dividerDrawable = typedArray.getDrawable(attr);
             } else if (attr == R.styleable.SimpleRecyclerView_rv_divider_color) {
-                dividerColor = typedArray.getColor(attr, Color.BLACK);
+                dividerColor = typedArray.getColor(attr, Color.WHITE);
             } else if (attr == R.styleable.SimpleRecyclerView_rv_default_animator_open) {
                 isDefaultAnimatorOpen = typedArray.getBoolean(attr, false);
             }
@@ -289,7 +289,7 @@ public class SimpleRecyclerView extends RecyclerView {
         private Context mContext;
         private int mOrientation;
         private int mDividerSize = 0;
-        private int mDividerColor = Color.BLACK;
+        private int mDividerColor = Color.WHITE;
         private Drawable mDividerDrawable;
         private Paint mPaint;
 
@@ -325,12 +325,20 @@ public class SimpleRecyclerView extends RecyclerView {
          */
         @Override
         public void onDraw(Canvas c, RecyclerView parent, State state) {
-            //纵向列表画横线，横向列表画竖线
-            if (mOrientation == SimpleRecyclerView.ORIENTATION_VERTICAL) {
+            //grid或者stagger横纵向都绘制
+            if (type == TYPE_GRID || type == TYPE_STAGGER) {
                 drawHorientationDivider(c, parent, state);
-            } else {
                 drawVerticalDivider(c, parent, state);
+            } else {
+                //纵向列表画横线，横向列表画竖线
+                if (mOrientation == SimpleRecyclerView.ORIENTATION_VERTICAL) {
+                    drawHorientationDivider(c, parent, state);
+                } else {
+                    drawVerticalDivider(c, parent, state);
+                }
             }
+
+
         }
 
         /**
