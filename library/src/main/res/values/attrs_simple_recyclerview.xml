@@ -4,8 +4,9 @@
     <declare-styleable name="SimpleRecyclerView">
         <!--RecyclerView的类型-->
         <attr name="rv_type" format="integer">
-            <enum name="grid" value="0"/>
-            <enum name="stagger" value="1"/>
+            <enum name="list" value="0"/>
+            <enum name="grid" value="1"/>
+            <enum name="stagger" value="2"/>
         </attr>
 
         <!--RecyclerView的方向-->

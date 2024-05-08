@@ -10,6 +10,7 @@
         app:rv_divider_size="10dp"
         app:rv_type="grid"
         app:rv_column="3"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 </LinearLayout>

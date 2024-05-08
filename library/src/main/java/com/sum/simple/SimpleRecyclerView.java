@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -25,15 +26,16 @@ public class SimpleRecyclerView extends RecyclerView {
 
     /*------------------ 常量 begin ------------------*/
     //类型
-    public static final int TYPE_GRID = 0;
-    public static final int TYPE_STAGGER = 1;
+    public static final int TYPE_LIST = 0;
+    public static final int TYPE_GRID = 1;
+    public static final int TYPE_STAGGER = 2;
     //方向
     public static final int ORIENTATION_VERTICAL = 0;
     public static final int ORIENTATION_HORIZONTAL = 1;
     /*------------------ 常量 end ------------------*/
 
     //类型、方向、列数
-    private int type = TYPE_GRID;
+    private int type = TYPE_LIST;
     private int orientation = ORIENTATION_VERTICAL;
     private int column = 1;
 
@@ -93,26 +95,28 @@ public class SimpleRecyclerView extends RecyclerView {
     private void init() {
         //1、设置RecyclerView的类型和方向
         switch (type) {
-            case TYPE_GRID:
+            case TYPE_LIST -> {
                 switch (orientation) {
-                    case ORIENTATION_VERTICAL:
-                        mLayoutManager = new GridLayoutManager(mContext, column);
-                        break;
-                    case ORIENTATION_HORIZONTAL:
-                        mLayoutManager = new GridLayoutManager(mContext, column, GridLayoutManager.HORIZONTAL, false);
-                        break;
+                    case ORIENTATION_VERTICAL -> mLayoutManager = new LinearLayoutManager(mContext);
+                    case ORIENTATION_HORIZONTAL ->
+                            mLayoutManager = new LinearLayoutManager(mContext, GridLayoutManager.HORIZONTAL, false);
                 }
-                break;
-            case TYPE_STAGGER:
+            }
+            case TYPE_GRID -> {
                 switch (orientation) {
-                    case ORIENTATION_VERTICAL:
-                        mLayoutManager = new StaggeredGridLayoutManager(column, StaggeredGridLayoutManager.VERTICAL);
-                        break;
-                    case ORIENTATION_HORIZONTAL:
-                        mLayoutManager = new StaggeredGridLayoutManager(column, StaggeredGridLayoutManager.HORIZONTAL);
-                        break;
+                    case ORIENTATION_VERTICAL -> mLayoutManager = new GridLayoutManager(mContext, column);
+                    case ORIENTATION_HORIZONTAL ->
+                            mLayoutManager = new GridLayoutManager(mContext, column, GridLayoutManager.HORIZONTAL, false);
                 }
-                break;
+            }
+            case TYPE_STAGGER -> {
+                switch (orientation) {
+                    case ORIENTATION_VERTICAL ->
+                            mLayoutManager = new StaggeredGridLayoutManager(column, StaggeredGridLayoutManager.VERTICAL);
+                    case ORIENTATION_HORIZONTAL ->
+                            mLayoutManager = new StaggeredGridLayoutManager(column, StaggeredGridLayoutManager.HORIZONTAL);
+                }
+            }
         }
         this.setLayoutManager(mLayoutManager);
 
@@ -151,7 +155,7 @@ public class SimpleRecyclerView extends RecyclerView {
      * 平滑滚动到指定位置（注意：对瀑布流无效果）
      */
     public void smoothMoveToPosition(int position) {
-        if (type != TYPE_GRID) {
+        if (type == TYPE_STAGGER) {
             return;
         }
 
@@ -181,7 +185,7 @@ public class SimpleRecyclerView extends RecyclerView {
      * 滚动到指定位置（注意：对瀑布流无效果）
      */
     public void moveToPosition(int position) {
-        if (type != TYPE_GRID) {
+        if (type == TYPE_STAGGER) {
             return;
         }
 
@@ -346,10 +350,15 @@ public class SimpleRecyclerView extends RecyclerView {
          */
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, State state) {
-            if (mOrientation == SimpleRecyclerView.ORIENTATION_VERTICAL) {
-                outRect.set(0, 0, 0, mDividerSize);
+            //grid或者stagger横纵向都绘制
+            if (type == TYPE_GRID || type == TYPE_STAGGER) {
+                outRect.set(0, 0, mDividerSize, mDividerSize);
             } else {
-                outRect.set(0, 0, mDividerSize, 0);
+                if (mOrientation == SimpleRecyclerView.ORIENTATION_VERTICAL) {
+                    outRect.set(0, 0, 0, mDividerSize);
+                } else {
+                    outRect.set(0, 0, mDividerSize, 0);
+                }
             }
         }
 
