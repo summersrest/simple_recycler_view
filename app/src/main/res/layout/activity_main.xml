@@ -2,15 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:padding="20dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <com.sum.simple.SimpleRecyclerView
         android:id="@+id/recycler_view"
         app:rv_divider_color="@color/black"
         app:rv_divider_size="10dp"
+        app:rv_divider_last_show="false"
+        app:rv_orientation="vertical"
         app:rv_type="grid"
-        app:rv_column="3"
-        android:orientation="vertical"
+        app:rv_cross_axis="3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 </LinearLayout>

@@ -11,19 +11,22 @@
 
         <!--RecyclerView的方向-->
         <attr name="rv_orientation">
-            <enum name="vertical" value="0"/>
-            <enum name="horizontal" value="1"/>
+            <enum name="horizontal" value="0"/>
+            <enum name="vertical" value="1"/>
         </attr>
 
-        <!--网格或瀑布流的列数-->
-        <attr name="rv_column" format="integer"/>
+        <!--网格或瀑布流的交叉轴行列数-->
+        <attr name="rv_cross_axis" format="integer"/>
 
-        <!--下划线高度/宽度-->
+        <!--分割线高度/宽度-->
         <attr name="rv_divider_size" format="dimension"/>
-        <!--下划线颜色-->
+        <!--分割线颜色-->
         <attr name="rv_divider_color" format="color"/>
-        <!--下划线图片-->
+        <!--分割线图片-->
         <attr name="rv_divider_drawable" format="reference"/>
+
+        <!--最后一条是否显示分割线-->
+        <attr name="rv_divider_last_show" format="boolean"/>
 
         <!--是否开启默认动画-->
         <attr name="rv_default_animator_open" format="boolean"/>

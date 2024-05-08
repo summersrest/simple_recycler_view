@@ -30,19 +30,20 @@ public class SimpleRecyclerView extends RecyclerView {
     public static final int TYPE_GRID = 1;
     public static final int TYPE_STAGGER = 2;
     //方向
-    public static final int ORIENTATION_VERTICAL = 0;
-    public static final int ORIENTATION_HORIZONTAL = 1;
+    public static final int ORIENTATION_HORIZONTAL = 0;
+    public static final int ORIENTATION_VERTICAL = 1;
     /*------------------ 常量 end ------------------*/
 
     //类型、方向、列数
     private int type = TYPE_LIST;
     private int orientation = ORIENTATION_VERTICAL;
-    private int column = 1;
+    private int crossAxisCount = 1;
 
     //分割线
     private int dividerSize = 0;
     private int dividerColor = Color.WHITE;
     private Drawable dividerDrawable = null;
+    private boolean isLastItemShowDivider = true;
 
     //动画
     private boolean isDefaultAnimatorOpen = false;
@@ -70,9 +71,9 @@ public class SimpleRecyclerView extends RecyclerView {
             if (attr == R.styleable.SimpleRecyclerView_rv_type) {
                 type = typedArray.getInt(attr, 0);
             } else if (attr == R.styleable.SimpleRecyclerView_rv_orientation) {
-                orientation = typedArray.getInt(attr, 0);
-            } else if (attr == R.styleable.SimpleRecyclerView_rv_column) {
-                column = typedArray.getInt(attr, 1);
+                orientation = typedArray.getInt(attr, ORIENTATION_VERTICAL);
+            } else if (attr == R.styleable.SimpleRecyclerView_rv_cross_axis) {
+                crossAxisCount = typedArray.getInt(attr, 1);
             } else if (attr == R.styleable.SimpleRecyclerView_rv_divider_size) {
                 dividerSize = (int) typedArray.getDimension(attr, 0f);
             } else if (attr == R.styleable.SimpleRecyclerView_rv_divider_drawable) {
@@ -81,6 +82,8 @@ public class SimpleRecyclerView extends RecyclerView {
                 dividerColor = typedArray.getColor(attr, Color.WHITE);
             } else if (attr == R.styleable.SimpleRecyclerView_rv_default_animator_open) {
                 isDefaultAnimatorOpen = typedArray.getBoolean(attr, false);
+            } else if (attr == R.styleable.SimpleRecyclerView_rv_divider_last_show) {
+                isLastItemShowDivider = typedArray.getBoolean(attr, true);
             }
         }
         typedArray.recycle();
@@ -97,24 +100,26 @@ public class SimpleRecyclerView extends RecyclerView {
         switch (type) {
             case TYPE_LIST -> {
                 switch (orientation) {
-                    case ORIENTATION_VERTICAL -> mLayoutManager = new LinearLayoutManager(mContext);
-                    case ORIENTATION_HORIZONTAL ->
-                            mLayoutManager = new LinearLayoutManager(mContext, GridLayoutManager.HORIZONTAL, false);
+                    case ORIENTATION_VERTICAL ->
+                            mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+                    case ORIENTATION_HORIZONTAL -> mLayoutManager = new LinearLayoutManager(mContext,
+                            LinearLayoutManager.HORIZONTAL, false);
                 }
             }
             case TYPE_GRID -> {
                 switch (orientation) {
-                    case ORIENTATION_VERTICAL -> mLayoutManager = new GridLayoutManager(mContext, column);
+                    case ORIENTATION_VERTICAL -> mLayoutManager = new GridLayoutManager(mContext, crossAxisCount,
+                            GridLayoutManager.VERTICAL, false);
                     case ORIENTATION_HORIZONTAL ->
-                            mLayoutManager = new GridLayoutManager(mContext, column, GridLayoutManager.HORIZONTAL, false);
+                            mLayoutManager = new GridLayoutManager(mContext, crossAxisCount, GridLayoutManager.HORIZONTAL, false);
                 }
             }
             case TYPE_STAGGER -> {
                 switch (orientation) {
                     case ORIENTATION_VERTICAL ->
-                            mLayoutManager = new StaggeredGridLayoutManager(column, StaggeredGridLayoutManager.VERTICAL);
+                            mLayoutManager = new StaggeredGridLayoutManager(crossAxisCount, StaggeredGridLayoutManager.VERTICAL);
                     case ORIENTATION_HORIZONTAL ->
-                            mLayoutManager = new StaggeredGridLayoutManager(column, StaggeredGridLayoutManager.HORIZONTAL);
+                            mLayoutManager = new StaggeredGridLayoutManager(crossAxisCount, StaggeredGridLayoutManager.HORIZONTAL);
                 }
             }
         }
@@ -329,20 +334,151 @@ public class SimpleRecyclerView extends RecyclerView {
          */
         @Override
         public void onDraw(Canvas c, RecyclerView parent, State state) {
-            //grid或者stagger横纵向都绘制
-            if (type == TYPE_GRID || type == TYPE_STAGGER) {
-                drawHorientationDivider(c, parent, state);
-                drawVerticalDivider(c, parent, state);
+            //列表
+            if (type == TYPE_LIST) {
+                drawListDivider(c, parent, state);
             } else {
-                //纵向列表画横线，横向列表画竖线
-                if (mOrientation == SimpleRecyclerView.ORIENTATION_VERTICAL) {
-                    drawHorientationDivider(c, parent, state);
-                } else {
-                    drawVerticalDivider(c, parent, state);
+                //表格，瀑布流
+                drawGridDivider(c, parent, state);
+            }
+        }
+
+        /**
+         * 绘制List分割线
+         *
+         * @param c
+         * @param parent
+         * @param state
+         */
+        private void drawListDivider(Canvas c, RecyclerView parent, State state) {
+            int childCount = isLastItemShowDivider ? parent.getChildCount() : parent.getChildCount() - 1;
+            //垂直方向
+            if (orientation == ORIENTATION_VERTICAL) {
+                for (int i = 0; i < childCount; i++) {
+                    View child = parent.getChildAt(i);
+                    LayoutParams params = (LayoutParams) child.getLayoutParams();
+                    int top = child.getBottom() + params.bottomMargin;
+                    int bottom = top + dividerSize;
+                    int right = parent.getMeasuredWidth() - parent.getPaddingRight();
+                    int left = parent.getPaddingLeft();
+                    //得到四个点后开始画
+                    if (mDividerDrawable == null) {
+                        c.drawRect(left, top, right, bottom, mPaint);
+                    } else {
+                        mDividerDrawable.setBounds(left, top, right, bottom);
+                        mDividerDrawable.draw(c);
+                    }
+                }
+            } else {
+                //水平方向
+                for (int i = 0; i < childCount; i++) {
+                    View child = parent.getChildAt(i);
+                    LayoutParams params = (LayoutParams) child.getLayoutParams();
+                    int top = parent.getPaddingTop();
+                    int bottom = parent.getMeasuredHeight() + top;
+                    int left = child.getRight() + params.rightMargin;
+                    int right = left + dividerSize;
+                    //得到四个点后开始画
+                    if (mDividerDrawable == null) {
+                        c.drawRect(left, top, right, bottom, mPaint);
+                    } else {
+                        mDividerDrawable.setBounds(left, top, right, bottom);
+                        mDividerDrawable.draw(c);
+                    }
                 }
             }
+        }
 
-
+        /**
+         * 绘制Grid/stagger分割线
+         *
+         * @param c
+         * @param parent
+         * @param state
+         */
+        private void drawGridDivider(Canvas c, RecyclerView parent, State state) {
+            int childCount = parent.getChildCount();
+            //垂直方向
+            if (orientation == ORIENTATION_VERTICAL) {
+                for (int i = 0; i < childCount; i++) {
+                    View child = parent.getChildAt(i);
+                    LayoutParams params = (LayoutParams) child.getLayoutParams();
+                    //绘制竖线
+                    //是最后一列，并且isLastItemShowDivider为false的情况下，不绘制竖向分割线。
+                    if (isLastCrossAxis(i, crossAxisCount) && !isLastItemShowDivider) {
+                        //不绘制分割线
+                    } else {
+                        //绘制分割线
+                        int top = child.getTop() - params.topMargin;
+                        int left = child.getRight() + params.rightMargin;
+                        int bottom = child.getBottom() + params.bottomMargin + dividerSize;
+                        int right = left + dividerSize;
+                        if (mDividerDrawable == null) {
+                            c.drawRect(left, top, right, bottom, mPaint);
+                        } else {
+                            mDividerDrawable.setBounds(left, top, right, bottom);
+                            mDividerDrawable.draw(c);
+                        }
+                    }
+                    //绘制横线
+                    //如果是最后一行，并且isLastItemShowDivider为false的情况下，不绘制横向分割线。
+                    if (isLastMainAxis(i, crossAxisCount, childCount) && !isLastItemShowDivider) {
+                        //不绘制
+                    } else {
+                        int top = child.getBottom() + params.bottomMargin;
+                        int left = child.getLeft() - params.leftMargin;
+                        int bottom = top + dividerSize;
+                        int right = child.getRight() + params.rightMargin + dividerSize;
+                        //得到四个点后开始画
+                        if (mDividerDrawable == null) {
+                            c.drawRect(left, top, right, bottom, mPaint);
+                        } else {
+                            mDividerDrawable.setBounds(left, top, right, bottom);
+                            mDividerDrawable.draw(c);
+                        }
+                    }
+                }
+            } else {
+                //水平方向
+                for (int i = 0; i < childCount; i++) {
+                    View child = parent.getChildAt(i);
+                    LayoutParams params = (LayoutParams) child.getLayoutParams();
+                    //绘制竖线
+                    //是最后一列，并且isLastItemShowDivider为false的情况下，不绘制竖向分割线。
+                    if (isLastMainAxis(i, crossAxisCount, childCount) && !isLastItemShowDivider) {
+                        //不绘制
+                    } else {
+                        //绘制分割线
+                        int top = child.getTop() - params.topMargin;
+                        int left = child.getRight() + params.rightMargin;
+                        int bottom = child.getBottom() + params.bottomMargin + dividerSize;
+                        int right = left + dividerSize;
+                        if (mDividerDrawable == null) {
+                            c.drawRect(left, top, right, bottom, mPaint);
+                        } else {
+                            mDividerDrawable.setBounds(left, top, right, bottom);
+                            mDividerDrawable.draw(c);
+                        }
+                    }
+                    //绘制横线
+                    //如果是最后一行，并且isLastItemShowDivider为false的情况下，不绘制横向分割线。
+                    if (isLastCrossAxis(i, crossAxisCount) && !isLastItemShowDivider) {
+                        //不绘制
+                    } else {
+                        int top = child.getBottom() + params.bottomMargin;
+                        int left = child.getLeft() - params.leftMargin;
+                        int bottom = top + dividerSize;
+                        int right = child.getRight() + params.rightMargin + dividerSize;
+                        //得到四个点后开始画
+                        if (mDividerDrawable == null) {
+                            c.drawRect(left, top, right, bottom, mPaint);
+                        } else {
+                            mDividerDrawable.setBounds(left, top, right, bottom);
+                            mDividerDrawable.draw(c);
+                        }
+                    }
+                }
+            }
         }
 
         /**
@@ -350,16 +486,98 @@ public class SimpleRecyclerView extends RecyclerView {
          */
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, State state) {
-            //grid或者stagger横纵向都绘制
-            if (type == TYPE_GRID || type == TYPE_STAGGER) {
-                outRect.set(0, 0, mDividerSize, mDividerSize);
-            } else {
-                if (mOrientation == SimpleRecyclerView.ORIENTATION_VERTICAL) {
-                    outRect.set(0, 0, 0, mDividerSize);
+            //当前index
+            int currentIndex = parent.getChildAdapterPosition(view);
+            int allCount = 0;
+            if (parent.getAdapter() != null) {
+                allCount = parent.getAdapter().getItemCount();
+            }
+            if (type == TYPE_LIST) {//List
+                //垂直方向
+                if (orientation == ORIENTATION_VERTICAL) {
+                    if (isLastItemShowDivider) {
+                        //全部向下偏移
+                        outRect.set(0, 0, 0, mDividerSize);
+                    } else {
+                        //最后一个item不绘制分割线，所以最后一个item不偏移
+                        if (currentIndex == allCount - 1)
+                            outRect.set(0, 0, 0, 0);
+                        else
+                            outRect.set(0, 0, 0, mDividerSize);
+                    }
                 } else {
-                    outRect.set(0, 0, mDividerSize, 0);
+                    //水平方向
+                    if (isLastItemShowDivider) {
+                        //全部向右偏移
+                        outRect.set(0, 0, mDividerSize, 0);
+                    } else {
+                        //最后一个item不绘制分割线，所以最后一个item不偏移
+                        if (currentIndex == allCount - 1)
+                            outRect.set(0, 0, 0, 0);
+                        else
+                            outRect.set(0, 0, mDividerSize, 0);
+                    }
+                }
+            } else {//Grid
+                //最后的行或者列显示分割线
+                if (isLastItemShowDivider) {
+                    //全部偏移
+                    outRect.set(0, 0, mDividerSize, mDividerSize);
+                } else {
+                    //最后的行或者列不显示分割线
+                    //垂直方向
+                    if (orientation == ORIENTATION_VERTICAL) {
+                        //当前item是否为最后一行
+                        boolean isLastRow = isLastMainAxis(currentIndex, crossAxisCount, allCount);
+                        //当前item是否为最后一列
+                        boolean isLastColumn = isLastCrossAxis(currentIndex, crossAxisCount);
+                        outRect.set(0, 0,
+                                isLastColumn ? 0 : mDividerSize,
+                                isLastRow ? 0 : mDividerSize);
+                    } else {
+                        //水平方向
+                        //当前item是否为最后一列
+                        boolean isLastColumn = isLastMainAxis(currentIndex, crossAxisCount, allCount);
+                        //当前item是否为最后一行
+                        boolean isLastRow = isLastCrossAxis(currentIndex, crossAxisCount);
+                        outRect.set(0, 0,
+                                isLastColumn ? 0 : mDividerSize,
+                                isLastRow ? 0 : mDividerSize);
+                    }
+
                 }
             }
+        }
+
+        /**
+         * 判断是否主轴最后一行/列
+         *
+         * @param currentIndex
+         * @param crossAxisCount
+         * @param childCount
+         * @return
+         */
+        private boolean isLastMainAxis(int currentIndex, int crossAxisCount, int childCount) {
+            //总数小于列数，一定为最后一行
+            if (childCount <= crossAxisCount) {
+                return true;
+            } else {
+                //总数大于列数，需要判断当前item是否为最后一行
+                int row = currentIndex / crossAxisCount;
+                int columnCount = childCount % crossAxisCount == 0 ? childCount / crossAxisCount : childCount / crossAxisCount + 1;
+                return row == columnCount - 1;
+            }
+        }
+
+        /**
+         * 判断是否交叉轴最后一行/列
+         *
+         * @param currentIndex
+         * @param crossAxisCount
+         * @return
+         */
+        private boolean isLastCrossAxis(int currentIndex, int crossAxisCount) {
+            return (currentIndex + 1) % crossAxisCount == 0;
         }
 
         /**
@@ -372,14 +590,37 @@ public class SimpleRecyclerView extends RecyclerView {
             int right = parent.getMeasuredWidth() - parent.getPaddingRight();
 
             //上下需要根据每个孩子控件计算
-            for (int i = 0; i < parent.getChildCount(); i++) {
+            int childCount = parent.getChildCount();
+            if (isLastItemShowDivider) {
+                childCount = parent.getChildCount();
+            } else {
+                //List只需要去掉最后一个分割线
+                if (type == TYPE_LIST) {
+                    childCount = parent.getChildCount() - 1;
+                } else {
+                    //grid或者stagger需要去掉最后一行
+                    float rowCountFloat = (float) (parent.getChildCount()) / (float) crossAxisCount;
+                    int rowCountInt = parent.getChildCount() / crossAxisCount;
+                    //不是正好满行
+                    if (rowCountFloat > rowCountInt) {
+                        childCount = crossAxisCount * rowCountInt;
+                    } else {
+                        //正好满行
+                        childCount = crossAxisCount * (rowCountInt - 1);
+                    }
+                }
+
+            }
+
+            for (int i = 0; i < childCount; i++) {
                 View child = parent.getChildAt(i);
                 LayoutParams params = (LayoutParams) child.getLayoutParams();
                 int top = child.getBottom() + params.bottomMargin;
                 int bottom = top + dividerSize;
                 //得到四个点后开始画
                 if (mDividerDrawable == null) {
-                    c.drawRect(left, top, right, bottom, mPaint);
+                    c.drawRect(child.getLeft(), top, (child.getLeft() + child.getMeasuredWidth()),
+                            bottom, mPaint);
                 } else {
                     mDividerDrawable.setBounds(left, top, right, bottom);
                     mDividerDrawable.draw(c);
@@ -396,7 +637,8 @@ public class SimpleRecyclerView extends RecyclerView {
             int bottom = parent.getMeasuredHeight() - parent.getPaddingBottom();
 
             //左右需要根据孩子控件计算
-            for (int i = 0; i < parent.getChildCount(); i++) {
+            int childCount = isLastItemShowDivider ? parent.getChildCount() : parent.getChildCount() - 1;
+            for (int i = 0; i < childCount; i++) {
                 View child = parent.getChildAt(i);
                 LayoutParams params = (LayoutParams) child.getLayoutParams();
                 int left = child.getRight() + params.rightMargin;
@@ -429,12 +671,12 @@ public class SimpleRecyclerView extends RecyclerView {
         this.orientation = orientation;
     }
 
-    public int getColumn() {
-        return column;
+    public int getCrossAxisCount() {
+        return crossAxisCount;
     }
 
-    public void setColumn(int column) {
-        this.column = column;
+    public void setCrossAxisCount(int crossAxisCount) {
+        this.crossAxisCount = crossAxisCount;
     }
 
     public int getDividerSize() {
