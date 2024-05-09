@@ -11,7 +11,7 @@ RecyclerView的封装
         app:rv_divider_size="10dp"				//设置分割线大小
         app:rv_orientation="vertical"				//设置列表控件的方向
         app:rv_default_animator_open="true"			//设置是否开启局部刷新动画（不设置默认关闭）
-		app:rv_cross_axis="3"					//交叉轴行/列数量
+	app:rv_cross_axis="3"					//交叉轴行/列数量
  	app:rv_divider_padding="15dp"				//分割线前后的padding
         app:rv_type="grid"/>					//设置列表类型（列表/网格、瀑布流）
 
