@@ -11,8 +11,9 @@
         app:rv_divider_size="10dp"
         app:rv_divider_last_show="false"
         app:rv_orientation="vertical"
-        app:rv_type="grid"
         app:rv_cross_axis="3"
+        app:rv_divider_padding="15dp"
+        app:rv_divider_padding_end="50dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 </LinearLayout>

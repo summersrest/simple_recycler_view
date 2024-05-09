@@ -24,6 +24,9 @@
         <attr name="rv_divider_color" format="color"/>
         <!--分割线图片-->
         <attr name="rv_divider_drawable" format="reference"/>
+        <attr name="rv_divider_padding" format="dimension"/>
+        <attr name="rv_divider_padding_start" format="dimension"/>
+        <attr name="rv_divider_padding_end" format="dimension"/>
 
         <!--最后一条是否显示分割线-->
         <attr name="rv_divider_last_show" format="boolean"/>
