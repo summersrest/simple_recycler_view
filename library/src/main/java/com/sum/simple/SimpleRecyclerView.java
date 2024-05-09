@@ -33,7 +33,6 @@ public class SimpleRecyclerView extends RecyclerView {
     private int type = TYPE_LIST;
     private int orientation = ORIENTATION_VERTICAL;
     private int crossAxisCount = 1;
-
     //分割线
     private float dividerSize = 0;
     private float dividerPadding = 0;
@@ -638,6 +637,31 @@ public class SimpleRecyclerView extends RecyclerView {
 
     public boolean isDefaultAnimatorOpen() {
         return isDefaultAnimatorOpen;
+    }
+
+
+    public float getDividerPadding() {
+        return dividerPadding;
+    }
+
+    public void setDividerPadding(float dividerPadding) {
+        this.dividerPadding = dividerPadding;
+    }
+
+    public float getDividerPaddingStart() {
+        return dividerPaddingStart;
+    }
+
+    public void setDividerPaddingStart(float dividerPaddingStart) {
+        this.dividerPaddingStart = dividerPaddingStart;
+    }
+
+    public float getDividerPaddingEnd() {
+        return dividerPaddingEnd;
+    }
+
+    public void setDividerPaddingEnd(float dividerPaddingEnd) {
+        this.dividerPaddingEnd = dividerPaddingEnd;
     }
 
     /**
