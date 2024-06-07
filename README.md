@@ -19,7 +19,7 @@ RecyclerView的封装
 1.引入jitpack
 项目根目录中的settings.gradle
 
-     ```
+     ```java
     dependencyResolutionManagement {
         repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
         repositories {
