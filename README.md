@@ -2,7 +2,7 @@
 RecyclerView的封装
 ## ***SimpleRecyclerView***
 使用：
-
+```xml
 <com.sum.simple.SimpleRecyclerView
 	android:id="@+id/rv"
 	android:layout_width="match_parent"
@@ -14,7 +14,7 @@ RecyclerView的封装
 	app:rv_cross_axis="3"					//交叉轴行/列数量
 	app:rv_divider_padding="15dp"				//分割线前后的padding
 	app:rv_type="grid"/>					//设置列表类型（列表/网格、瀑布流）
-
+```
 ### **1、导入**
 1.引入jitpack
 项目根目录中的settings.gradle
